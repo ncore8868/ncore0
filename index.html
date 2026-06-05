@@ -297,9 +297,9 @@
       <div class="desc">원하시는 항목을 선택해 주세요.</div>
 
       <div class="button-grid">
-        <button type="button" class="choice-btn" onclick="selectWork('철거')">철거</button>
+        <button type="button" class="choice-btn" onclick="selectWork('내부철거')">내부철거</button>
         <button type="button" class="choice-btn" onclick="selectWork('원상복구')">원상복구</button>
-        <button type="button" class="choice-btn" onclick="selectWork('부분철거')">부분철거</button>
+        <button type="button" class="choice-btn" onclick="selectWork('외부철거')">외부철거</button>
         <button type="button" class="choice-btn" onclick="selectWork('기타')">기타</button>
       </div>
     </div>
@@ -330,7 +330,9 @@
         <button type="button" class="choice-btn" onclick="selectDistrict('서구')">서구</button>
         <button type="button" class="choice-btn" onclick="selectDistrict('남구')">남구</button>
         <button type="button" class="choice-btn" onclick="selectDistrict('북구')">북구</button>
+        <button type="button" class="choice-btn" onclick="selectDistrict('중구')">중구</button>
         <button type="button" class="choice-btn" onclick="selectDistrict('수성구')">수성구</button>
+        <button type="button" class="choice-btn" onclick="selectDistrict('달서구')">달서구</button>
         <button type="button" class="choice-btn" onclick="selectDistrict('기타')">기타</button>
       </div>
 
@@ -346,6 +348,18 @@
       <input type="text" id="gyeongbukCityInput" placeholder="예: 경산시, 구미시, 포항시">
 
       <button type="button" class="submit-btn" onclick="submitGyeongbukCity()">다음</button>
+      <button type="button" class="back-btn" onclick="goStep('step-region')">이전으로</button>
+    </div>
+
+    <!-- 3. 기타 지역 입력 -->
+    <div class="step hidden" id="step-other-region">
+      <div class="progress">3 / 8</div>
+      <div class="title">어느 지역인가요?</div>
+      <div class="desc">현장 지역을 입력해 주세요.</div>
+
+      <input type="text" id="otherRegionInput" placeholder="예: 부산, 울산, 서울, 경남 김해시">
+
+      <button type="button" class="submit-btn" onclick="submitOtherRegion()">다음</button>
       <button type="button" class="back-btn" onclick="goStep('step-region')">이전으로</button>
     </div>
 
@@ -406,7 +420,7 @@
       <div class="button-grid">
         <button type="button" class="choice-btn" onclick="selectSchedule('가능한 빨리')">가능한 빨리</button>
         <button type="button" class="choice-btn" onclick="selectSchedule('원하는 날짜 있음')">원하는 날짜 있음</button>
-        <button type="button" class="choice-btn" onclick="selectSchedule('상담 후 협의')">상담 후 협의</button>
+        <button type="button" class="choice-btn" onclick="selectSchedule('협의 후 결정')">협의 후 결정</button>
         <button type="button" class="choice-btn" onclick="selectSchedule('기타')">기타</button>
       </div>
 
@@ -437,6 +451,7 @@
         <input type="hidden" name="region" id="region">
         <input type="hidden" name="district" id="district">
         <input type="hidden" name="gyeongbukCity" id="gyeongbukCity">
+        <input type="hidden" name="otherRegion" id="otherRegion">
         <input type="hidden" name="floor" id="floor">
         <input type="hidden" name="pyeong" id="pyeong">
         <input type="hidden" name="buildingType" id="buildingType">
@@ -473,6 +488,7 @@
       region: "",
       district: "",
       gyeongbukCity: "",
+      otherRegion: "",
       floor: "",
       pyeong: "",
       buildingType: "",
@@ -498,11 +514,14 @@
       data.region = value;
       data.district = "";
       data.gyeongbukCity = "";
+      data.otherRegion = "";
 
       if (value === "대구") {
         goStep("step-district");
       } else if (value === "경북") {
         goStep("step-gyeongbuk");
+      } else if (value === "기타") {
+        goStep("step-other-region");
       } else {
         goStep("step-floor");
       }
@@ -524,6 +543,20 @@
       }
 
       data.gyeongbukCity = cityValue;
+      goStep("step-floor");
+    }
+
+    function submitOtherRegion() {
+      const regionInput = document.getElementById("otherRegionInput");
+      const regionValue = regionInput.value.trim();
+
+      if (regionValue === "") {
+        alert("현장 지역을 입력해 주세요.");
+        regionInput.focus();
+        return;
+      }
+
+      data.otherRegion = regionValue;
       goStep("step-floor");
     }
 
@@ -549,6 +582,7 @@
       document.getElementById("region").value = data.region;
       document.getElementById("district").value = data.district;
       document.getElementById("gyeongbukCity").value = data.gyeongbukCity;
+      document.getElementById("otherRegion").value = data.otherRegion;
       document.getElementById("floor").value = data.floor;
       document.getElementById("pyeong").value = data.pyeong;
       document.getElementById("buildingType").value = data.buildingType;
@@ -560,6 +594,8 @@
         addressText = "대구 " + data.district;
       } else if (data.region === "경북" && data.gyeongbukCity !== "") {
         addressText = "경북 " + data.gyeongbukCity;
+      } else if (data.region === "기타" && data.otherRegion !== "") {
+        addressText = data.otherRegion;
       }
 
       document.getElementById("summaryBox").innerHTML =
@@ -578,6 +614,8 @@
         goStep("step-district");
       } else if (data.region === "경북") {
         goStep("step-gyeongbuk");
+      } else if (data.region === "기타") {
+        goStep("step-other-region");
       } else {
         goStep("step-region");
       }
@@ -598,13 +636,16 @@
       alert("문의가 접수되었습니다. 담당자가 빠르게 연락드리겠습니다.");
 
       form.reset();
+
       document.getElementById("gyeongbukCityInput").value = "";
+      document.getElementById("otherRegionInput").value = "";
 
       data = {
         workType: "",
         region: "",
         district: "",
         gyeongbukCity: "",
+        otherRegion: "",
         floor: "",
         pyeong: "",
         buildingType: "",
