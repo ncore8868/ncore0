@@ -137,6 +137,12 @@
       border-color: #111;
     }
 
+    .choice-btn.selected {
+      background: #111;
+      color: #fff;
+      border-color: #111;
+    }
+
     .hidden {
       display: none;
     }
@@ -294,14 +300,19 @@
     <div class="step" id="step-work">
       <div class="progress">1 / 8</div>
       <div class="title">어떤 문의가 필요하신가요?</div>
-      <div class="desc">원하시는 항목을 선택해 주세요.</div>
+      <div class="desc">
+        원하시는 항목을 선택해 주세요.<br>
+        여러 개 선택 가능합니다.
+      </div>
 
       <div class="button-grid">
-        <button type="button" class="choice-btn" onclick="selectWork('내부철거')">내부철거</button>
-        <button type="button" class="choice-btn" onclick="selectWork('원상복구')">원상복구</button>
-        <button type="button" class="choice-btn" onclick="selectWork('외부철거')">외부철거</button>
-        <button type="button" class="choice-btn" onclick="selectWork('기타')">기타</button>
+        <button type="button" class="choice-btn work-btn" onclick="toggleWork(this, '내부철거')">내부철거</button>
+        <button type="button" class="choice-btn work-btn" onclick="toggleWork(this, '원상복구')">원상복구</button>
+        <button type="button" class="choice-btn work-btn" onclick="toggleWork(this, '외부철거')">외부철거</button>
+        <button type="button" class="choice-btn work-btn" onclick="toggleWork(this, '기타')">기타</button>
       </div>
+
+      <button type="button" class="back-btn" onclick="goNextFromWork()">다음으로</button>
     </div>
 
     <!-- 2. 지역 -->
@@ -486,7 +497,7 @@
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyc9fbz-wXu7t6IT3UTW4BphST9lrpcOLys6y-eInOsRlPd4-8fJ6MiOL7dnGkFwui6UQ/exec";
 
     let data = {
-      workType: "",
+      workTypes: [],
       region: "",
       district: "",
       gyeongbukCity: "",
@@ -507,8 +518,24 @@
       document.getElementById(stepId).classList.remove("hidden");
     }
 
-    function selectWork(value) {
-      data.workType = value;
+    function toggleWork(button, value) {
+      const index = data.workTypes.indexOf(value);
+
+      if (index === -1) {
+        data.workTypes.push(value);
+        button.classList.add("selected");
+      } else {
+        data.workTypes.splice(index, 1);
+        button.classList.remove("selected");
+      }
+    }
+
+    function goNextFromWork() {
+      if (data.workTypes.length === 0) {
+        alert("문의 항목을 하나 이상 선택해 주세요.");
+        return;
+      }
+
       goStep("step-region");
     }
 
@@ -580,7 +607,9 @@
     function selectSchedule(value) {
       data.desiredSchedule = value;
 
-      document.getElementById("workType").value = data.workType;
+      const workTypeText = data.workTypes.join(", ");
+
+      document.getElementById("workType").value = workTypeText;
       document.getElementById("region").value = data.region;
       document.getElementById("district").value = data.district;
       document.getElementById("gyeongbukCity").value = data.gyeongbukCity;
@@ -601,7 +630,7 @@
       }
 
       document.getElementById("summaryBox").innerHTML =
-        "공사내용: " + data.workType +
+        "공사내용: " + workTypeText +
         "<br>지역: " + addressText +
         "<br>층수: " + data.floor +
         "<br>평수: " + data.pyeong +
@@ -643,7 +672,7 @@
       document.getElementById("otherRegionInput").value = "";
 
       data = {
-        workType: "",
+        workTypes: [],
         region: "",
         district: "",
         gyeongbukCity: "",
@@ -653,6 +682,10 @@
         buildingType: "",
         desiredSchedule: ""
       };
+
+      document.querySelectorAll(".work-btn").forEach(btn => {
+        btn.classList.remove("selected");
+      });
 
       goStep("step-work");
     });
