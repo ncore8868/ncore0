@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>N-CORE 무료 견적 문의</title>
 
   <style>
@@ -10,9 +10,16 @@
       box-sizing: border-box;
     }
 
+    html, body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      overscroll-behavior-x: none;
+    }
+
     body {
       margin: 0;
-      min-height: 100vh;
+      min-height: 100dvh;
       font-family: Arial, sans-serif;
       background-image:
         linear-gradient(rgba(0,0,0,0.68), rgba(0,0,0,0.68)),
@@ -22,14 +29,18 @@
       background-repeat: no-repeat;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       padding: 16px;
       color: #111;
+      word-break: keep-all;
+      overflow-wrap: break-word;
+      touch-action: pan-y;
     }
 
     .wrap {
       width: 100%;
       max-width: 430px;
+      min-width: 0;
       background: rgba(255,255,255,0.98);
       border-radius: 28px;
       padding: 24px 20px 22px;
@@ -61,6 +72,7 @@
       line-height: 1.5;
       font-weight: 600;
       letter-spacing: -0.2px;
+      word-break: keep-all;
     }
 
     .progress {
@@ -79,6 +91,7 @@
       letter-spacing: -0.4px;
       color: #111;
       line-height: 1.35;
+      word-break: keep-all;
     }
 
     .desc {
@@ -88,12 +101,15 @@
       line-height: 1.55;
       margin-bottom: 18px;
       font-weight: 500;
+      word-break: keep-all;
     }
 
     .button-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
+      width: 100%;
+      min-width: 0;
     }
 
     .choice-btn {
@@ -107,6 +123,8 @@
       min-height: 58px;
       color: #111;
       transition: 0.18s ease;
+      word-break: keep-all;
+      min-width: 0;
     }
 
     .choice-btn:active {
@@ -132,10 +150,12 @@
       line-height: 1.65;
       margin-bottom: 14px;
       font-weight: 600;
+      word-break: keep-all;
     }
 
     input, textarea {
       width: 100%;
+      max-width: 100%;
       border: 1px solid #d7d7d7;
       border-radius: 13px;
       padding: 15px;
@@ -157,6 +177,15 @@
       border-color: #111;
     }
 
+    .memo-guide {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #555;
+      line-height: 1.55;
+      font-weight: 600;
+      word-break: keep-all;
+    }
+
     .privacy-box {
       margin-top: 14px;
       padding: 12px;
@@ -166,6 +195,7 @@
       color: #444;
       line-height: 1.6;
       font-weight: 500;
+      word-break: keep-all;
     }
 
     .privacy-check {
@@ -176,11 +206,13 @@
       font-size: 13px;
       color: #222;
       font-weight: 600;
+      word-break: keep-all;
     }
 
     .privacy-check input {
       width: auto;
       margin: 0;
+      flex-shrink: 0;
     }
 
     .submit-btn {
@@ -216,6 +248,35 @@
       color: #5a5a5a;
       line-height: 1.6;
       font-weight: 600;
+      word-break: keep-all;
+    }
+
+    @media (max-width: 360px) {
+      body {
+        padding: 12px;
+      }
+
+      .wrap {
+        padding: 22px 18px 20px;
+        border-radius: 24px;
+      }
+
+      .main-logo {
+        width: 270px;
+      }
+
+      .title {
+        font-size: 20px;
+      }
+
+      .desc {
+        font-size: 14px;
+      }
+
+      .choice-btn {
+        font-size: 14px;
+        padding: 15px 6px;
+      }
     }
   </style>
 </head>
@@ -231,21 +292,21 @@
 
     <!-- 1. 어떤 문의 -->
     <div class="step" id="step-work">
-      <div class="progress">1 / 7</div>
+      <div class="progress">1 / 8</div>
       <div class="title">어떤 문의가 필요하신가요?</div>
       <div class="desc">원하시는 항목을 선택해 주세요.</div>
 
       <div class="button-grid">
         <button type="button" class="choice-btn" onclick="selectWork('철거')">철거</button>
         <button type="button" class="choice-btn" onclick="selectWork('원상복구')">원상복구</button>
-        <button type="button" class="choice-btn" onclick="selectWork('폐기물')">폐기물</button>
         <button type="button" class="choice-btn" onclick="selectWork('부분철거')">부분철거</button>
+        <button type="button" class="choice-btn" onclick="selectWork('기타')">기타</button>
       </div>
     </div>
 
     <!-- 2. 지역 -->
     <div class="step hidden" id="step-region">
-      <div class="progress">2 / 7</div>
+      <div class="progress">2 / 8</div>
       <div class="title">지역을 선택해 주세요</div>
       <div class="desc">현장 위치가 어느 지역인가요?</div>
 
@@ -260,7 +321,7 @@
 
     <!-- 3. 대구 구 선택 -->
     <div class="step hidden" id="step-district">
-      <div class="progress">3 / 7</div>
+      <div class="progress">3 / 8</div>
       <div class="title">대구 어느 지역인가요?</div>
       <div class="desc">해당 구를 선택해 주세요.</div>
 
@@ -276,9 +337,21 @@
       <button type="button" class="back-btn" onclick="goStep('step-region')">이전으로</button>
     </div>
 
+    <!-- 3. 경북 시/군 입력 -->
+    <div class="step hidden" id="step-gyeongbuk">
+      <div class="progress">3 / 8</div>
+      <div class="title">경북 어느 지역인가요?</div>
+      <div class="desc">시/군을 입력해 주세요.</div>
+
+      <input type="text" id="gyeongbukCityInput" placeholder="예: 경산시, 구미시, 포항시">
+
+      <button type="button" class="submit-btn" onclick="submitGyeongbukCity()">다음</button>
+      <button type="button" class="back-btn" onclick="goStep('step-region')">이전으로</button>
+    </div>
+
     <!-- 4. 층수 -->
     <div class="step hidden" id="step-floor">
-      <div class="progress">4 / 7</div>
+      <div class="progress">4 / 8</div>
       <div class="title">몇 층인가요?</div>
       <div class="desc">현장 층수를 선택해 주세요.</div>
 
@@ -294,7 +367,7 @@
 
     <!-- 5. 평수 -->
     <div class="step hidden" id="step-pyeong">
-      <div class="progress">5 / 7</div>
+      <div class="progress">5 / 8</div>
       <div class="title">평수는 어느 정도인가요?</div>
       <div class="desc">대략적인 규모를 선택해 주세요.</div>
 
@@ -310,7 +383,7 @@
 
     <!-- 6. 건물 유형 -->
     <div class="step hidden" id="step-building">
-      <div class="progress">6 / 7</div>
+      <div class="progress">6 / 8</div>
       <div class="title">건물 유형을 선택해 주세요</div>
       <div class="desc">현장에 가장 가까운 유형을 선택해 주세요.</div>
 
@@ -324,28 +397,54 @@
       <button type="button" class="back-btn" onclick="goStep('step-pyeong')">이전으로</button>
     </div>
 
-    <!-- 7. 상담 정보 -->
+    <!-- 7. 희망일정 -->
+    <div class="step hidden" id="step-schedule">
+      <div class="progress">7 / 8</div>
+      <div class="title">희망일정을 선택해 주세요</div>
+      <div class="desc">상담 또는 공사를 원하시는 일정을 선택해 주세요.</div>
+
+      <div class="button-grid">
+        <button type="button" class="choice-btn" onclick="selectSchedule('가능한 빨리')">가능한 빨리</button>
+        <button type="button" class="choice-btn" onclick="selectSchedule('원하는 날짜 있음')">원하는 날짜 있음</button>
+        <button type="button" class="choice-btn" onclick="selectSchedule('상담 후 협의')">상담 후 협의</button>
+        <button type="button" class="choice-btn" onclick="selectSchedule('기타')">기타</button>
+      </div>
+
+      <button type="button" class="back-btn" onclick="goStep('step-building')">이전으로</button>
+    </div>
+
+    <!-- 8. 상담 정보 -->
     <div class="step hidden" id="step-contact">
-      <div class="progress">7 / 7</div>
+      <div class="progress">8 / 8</div>
       <div class="title">상담 정보를 입력해 주세요</div>
-      <div class="desc">성함과 연락처를 남겨주시면 담당자가 빠르게 연락드리겠습니다.</div>
+      <div class="desc">
+        성함과 연락처를 남겨주시면<br>
+        담당자가 빠르게 연락드리겠습니다.
+      </div>
 
       <div class="summary-box" id="summaryBox"></div>
 
       <form id="contactForm">
-        <input type="text" name="name" placeholder="성함" required>
-        <input type="tel" name="phone" placeholder="연락처 예: 010-1234-5678" required>
-        <textarea name="memo" placeholder="전달사항 예: 철거 범위, 방문 가능 시간, 현장 특이사항 등"></textarea>
+        <input type="text" name="name" placeholder="성함 (필수)" required>
+        <input type="tel" name="phone" placeholder="연락처 (필수) 예: 010-1234-5678" required>
+
+        <div class="memo-guide">
+          담당자에게 전달하고 싶은 사항을 적어주세요. (선택)
+        </div>
+        <textarea name="memo" placeholder="전달사항 예: 철거 범위, 현장 특이사항 등"></textarea>
 
         <input type="hidden" name="workType" id="workType">
         <input type="hidden" name="region" id="region">
         <input type="hidden" name="district" id="district">
+        <input type="hidden" name="gyeongbukCity" id="gyeongbukCity">
         <input type="hidden" name="floor" id="floor">
         <input type="hidden" name="pyeong" id="pyeong">
         <input type="hidden" name="buildingType" id="buildingType">
+        <input type="hidden" name="desiredSchedule" id="desiredSchedule">
 
         <div class="privacy-box">
-          입력하신 개인정보는 견적 상담 및 문의 응대를 위해서만 사용됩니다.
+          입력하신 개인정보는 견적 상담 및 문의 응대를 위해서만<br>
+          사용됩니다.
         </div>
 
         <label class="privacy-check">
@@ -356,7 +455,7 @@
         <button type="submit" class="submit-btn">무료 견적 문의하기</button>
       </form>
 
-      <button type="button" class="back-btn" onclick="goStep('step-building')">이전으로</button>
+      <button type="button" class="back-btn" onclick="goStep('step-schedule')">이전으로</button>
     </div>
 
     <div class="bottom-text">
@@ -373,9 +472,11 @@
       workType: "",
       region: "",
       district: "",
+      gyeongbukCity: "",
       floor: "",
       pyeong: "",
-      buildingType: ""
+      buildingType: "",
+      desiredSchedule: ""
     };
 
     function hideAllSteps() {
@@ -396,9 +497,12 @@
     function selectRegion(value) {
       data.region = value;
       data.district = "";
+      data.gyeongbukCity = "";
 
       if (value === "대구") {
         goStep("step-district");
+      } else if (value === "경북") {
+        goStep("step-gyeongbuk");
       } else {
         goStep("step-floor");
       }
@@ -406,6 +510,20 @@
 
     function selectDistrict(value) {
       data.district = value;
+      goStep("step-floor");
+    }
+
+    function submitGyeongbukCity() {
+      const cityInput = document.getElementById("gyeongbukCityInput");
+      const cityValue = cityInput.value.trim();
+
+      if (cityValue === "") {
+        alert("경북 지역의 시/군을 입력해 주세요.");
+        cityInput.focus();
+        return;
+      }
+
+      data.gyeongbukCity = cityValue;
       goStep("step-floor");
     }
 
@@ -421,17 +539,27 @@
 
     function selectBuilding(value) {
       data.buildingType = value;
+      goStep("step-schedule");
+    }
+
+    function selectSchedule(value) {
+      data.desiredSchedule = value;
 
       document.getElementById("workType").value = data.workType;
       document.getElementById("region").value = data.region;
       document.getElementById("district").value = data.district;
+      document.getElementById("gyeongbukCity").value = data.gyeongbukCity;
       document.getElementById("floor").value = data.floor;
       document.getElementById("pyeong").value = data.pyeong;
       document.getElementById("buildingType").value = data.buildingType;
+      document.getElementById("desiredSchedule").value = data.desiredSchedule;
 
       let addressText = data.region;
+
       if (data.region === "대구" && data.district !== "") {
         addressText = "대구 " + data.district;
+      } else if (data.region === "경북" && data.gyeongbukCity !== "") {
+        addressText = "경북 " + data.gyeongbukCity;
       }
 
       document.getElementById("summaryBox").innerHTML =
@@ -439,7 +567,8 @@
         "<br>지역: " + addressText +
         "<br>층수: " + data.floor +
         "<br>평수: " + data.pyeong +
-        "<br>건물유형: " + data.buildingType;
+        "<br>건물유형: " + data.buildingType +
+        "<br>희망일정: " + data.desiredSchedule;
 
       goStep("step-contact");
     }
@@ -447,6 +576,8 @@
     function backFromFloor() {
       if (data.region === "대구") {
         goStep("step-district");
+      } else if (data.region === "경북") {
+        goStep("step-gyeongbuk");
       } else {
         goStep("step-region");
       }
@@ -467,14 +598,17 @@
       alert("문의가 접수되었습니다. 담당자가 빠르게 연락드리겠습니다.");
 
       form.reset();
+      document.getElementById("gyeongbukCityInput").value = "";
 
       data = {
         workType: "",
         region: "",
         district: "",
+        gyeongbukCity: "",
         floor: "",
         pyeong: "",
-        buildingType: ""
+        buildingType: "",
+        desiredSchedule: ""
       };
 
       goStep("step-work");
